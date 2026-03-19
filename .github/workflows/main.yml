@@ -1,0 +1,30 @@
+name: Daily Loan Lead Bot
+
+on:
+  schedule:
+    # Runs at 9:00 AM IST (which is 3:30 AM UTC)
+    - cron: '30 3 * * *'
+  workflow_dispatch: # Allows you to click "Run" manually for testing
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: pip install pandas requests pytz
+
+      - name: Execute Script
+        env:
+          # This maps your GitHub Secrets to the Python Environment
+          SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python loan_bot.py
